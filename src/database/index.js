@@ -4,7 +4,6 @@ import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 import Expense from '../models/Expense';
 import ScheduleItem from '../models/ScheduleItem';
 import Task from '../models/Task';
-import UserSetting from '../models/UserSetting';
 import schema from './schema';
 
 // First, create the adapter to the underlying database:
@@ -26,7 +25,6 @@ const database = new Database({
         Task,
         Expense,
         ScheduleItem,
-        UserSetting,
     ],
 });
 

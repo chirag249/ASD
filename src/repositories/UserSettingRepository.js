@@ -1,4 +1,4 @@
-import database from '../database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * Get a setting by key
@@ -7,10 +7,8 @@ import database from '../database';
  */
 export async function getSetting(key) {
     try {
-        const settingsCollection = database.get('user_settings');
-        const settings = await settingsCollection.query().fetch();
-        const setting = settings.find(s => s.key === key);
-        return setting ? setting.value : null;
+        const value = await AsyncStorage.getItem(`@settings:${key}`);
+        return value;
     } catch (error) {
         console.error('Error getting setting:', error);
         return null;
@@ -24,26 +22,7 @@ export async function getSetting(key) {
  */
 export async function setSetting(key, value) {
     try {
-        const settingsCollection = database.get('user_settings');
-        const settings = await settingsCollection.query().fetch();
-        const existingSetting = settings.find(s => s.key === key);
-
-        await database.write(async () => {
-            if (existingSetting) {
-                // Update existing setting
-                await existingSetting.update(setting => {
-                    setting.value = value;
-                    setting.updatedAt = Date.now();
-                });
-            } else {
-                // Create new setting
-                await settingsCollection.create(setting => {
-                    setting.key = key;
-                    setting.value = value;
-                    setting.updatedAt = Date.now();
-                });
-            }
-        });
+        await AsyncStorage.setItem(`@settings:${key}`, value);
     } catch (error) {
         console.error('Error setting setting:', error);
         throw error;
@@ -56,12 +35,15 @@ export async function setSetting(key, value) {
  */
 export async function getAllSettings() {
     try {
-        const settingsCollection = database.get('user_settings');
-        const settings = await settingsCollection.query().fetch();
+        const keys = ['theme', 'notificationSound', 'notificationsEnabled'];
+        const values = await AsyncStorage.multiGet(keys.map(k => `@settings:${k}`));
 
         const settingsObject = {};
-        settings.forEach(setting => {
-            settingsObject[setting.key] = setting.value;
+        values.forEach(([key, value]) => {
+            const settingKey = key.replace('@settings:', '');
+            if (value !== null) {
+                settingsObject[settingKey] = value;
+            }
         });
 
         return settingsObject;
