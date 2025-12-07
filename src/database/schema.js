@@ -32,5 +32,13 @@ export default appSchema({
                 { name: 'created_at', type: 'number' },
             ],
         }),
+        tableSchema({
+            name: 'user_settings',
+            columns: [
+                { name: 'key', type: 'string' },
+                { name: 'value', type: 'string' },
+                { name: 'updated_at', type: 'number' },
+            ],
+        }),
     ],
 });

@@ -6,41 +6,41 @@ const useTaskStore = create((set, get) => ({
     isLoading: true,
     filter: 'all', // 'all', 'active', 'completed'
 
-    // Initialize and subscribe to changes
-    fetchTasks: () => {
-        const subscription = TaskRepository.observeTasks().subscribe(tasks => {
-            // tasks is an array of immutable Model objects.
-            // We set them to state.
+    // Initialize
+    fetchTasks: async () => {
+        set({ isLoading: true });
+        try {
+            const tasks = await TaskRepository.getAllTasks();
             set({ tasks, isLoading: false });
-        });
-        return subscription;
+        } catch (error) {
+            console.error("Failed to fetch tasks", error);
+            set({ isLoading: false });
+        }
     },
 
     setFilter: (filter) => set({ filter }),
 
     addTask: async (taskData) => {
-        await TaskRepository.createTask(taskData);
+        const updatedTasks = await TaskRepository.createTask(taskData);
+        set({ tasks: updatedTasks });
     },
 
     updateTask: async (id, updates) => {
-        await TaskRepository.updateTask(id, updates);
+        const updatedTasks = await TaskRepository.updateTask(id, updates);
+        set({ tasks: updatedTasks });
     },
 
     deleteTask: async (id) => {
-        await TaskRepository.deleteTask(id);
+        const updatedTasks = await TaskRepository.deleteTask(id);
+        set({ tasks: updatedTasks });
     },
 
     toggleTask: async (id) => {
-        await TaskRepository.toggleTaskCompletion(id);
+        const updatedTasks = await TaskRepository.toggleTaskCompletion(id);
+        set({ tasks: updatedTasks });
     },
 
-    // Selector helper to get filtered tasks
-    getFilteredTasks: () => {
-        const { tasks, filter } = get();
-        if (filter === 'active') return tasks.filter(t => !t.completed);
-        if (filter === 'completed') return tasks.filter(t => t.completed);
-        return tasks;
-    }
+
 }));
 
 export default useTaskStore;

@@ -1,28 +1,38 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
     FlatList,
     KeyboardAvoidingView,
     Modal,
     Platform,
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
     View
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import useTaskStore from '../store/useTaskStore';
 
 export default function TasksScreen() {
+    // Select state pieces individually to avoid re-renders on every store update
+    const tasks = useTaskStore((state) => state.tasks);
+    const filter = useTaskStore((state) => state.filter);
+
+    // Actions are stable
     const fetchTasks = useTaskStore((state) => state.fetchTasks);
     const addTask = useTaskStore((state) => state.addTask);
     const toggleTask = useTaskStore((state) => state.toggleTask);
     const deleteTask = useTaskStore((state) => state.deleteTask);
     const updateTask = useTaskStore((state) => state.updateTask);
-    const filter = useTaskStore((state) => state.filter);
     const setFilter = useTaskStore((state) => state.setFilter);
-    const filteredTasks = useTaskStore((state) => state.getFilteredTasks());
+
+    // Compute filtered tasks here to avoid "Maximum update depth" and selector issues
+    const filteredTasks = useMemo(() => {
+        if (filter === 'active') return tasks.filter(t => !t.completed);
+        if (filter === 'completed') return tasks.filter(t => t.completed);
+        return tasks;
+    }, [tasks, filter]);
 
     // Local state for new task input
     const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -33,8 +43,8 @@ export default function TasksScreen() {
     const [editTitle, setEditTitle] = useState('');
 
     useEffect(() => {
-        const subscription = fetchTasks();
-        return () => subscription.unsubscribe();
+        fetchTasks();
+        // No subscription cleanup needed for simple async fetch
     }, []);
 
     const handleAddTask = () => {
