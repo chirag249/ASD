@@ -15,10 +15,12 @@ import {
 import { CalendarList } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useScheduleStore from '../store/useScheduleStore';
+import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
 export default function CalendarScreen() {
+    const theme = useTheme();
     const items = useScheduleStore((state) => state.items);
     const fetchItems = useScheduleStore((state) => state.fetchItems);
     const addItem = useScheduleStore((state) => state.addItem);
@@ -75,8 +77,16 @@ export default function CalendarScreen() {
         setModalVisible(false);
     };
 
+    const styles = createStyles(theme);
+
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
+            {/* Header */}
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>Calendar</Text>
+                <Text style={styles.headerSubtitle}>Manage your schedule</Text>
+            </View>
+
             <View style={styles.content}>
                 <CalendarList
                     current={selectedDate}
@@ -88,8 +98,15 @@ export default function CalendarScreen() {
                     pastScrollRange={12}
                     futureScrollRange={12}
                     theme={{
+                        backgroundColor: theme.colors.background.paper,
+                        calendarBackground: theme.colors.background.paper,
+                        textSectionTitleColor: theme.colors.text.secondary,
                         selectedDayBackgroundColor: '#007AFF',
+                        selectedDayTextColor: '#ffffff',
                         todayTextColor: '#007AFF',
+                        dayTextColor: theme.colors.text.primary,
+                        textDisabledColor: theme.colors.text.disabled,
+                        monthTextColor: theme.colors.text.primary,
                         arrowColor: '#007AFF',
                     }}
                 />
@@ -132,6 +149,7 @@ export default function CalendarScreen() {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Event Title"
+                                placeholderTextColor={theme.colors.text.disabled}
                                 value={newItemTitle}
                                 onChangeText={setNewItemTitle}
                             />
@@ -140,7 +158,7 @@ export default function CalendarScreen() {
                                 style={styles.timePickerButton}
                                 onPress={() => setShowTimePicker(true)}
                             >
-                                <Ionicons name="time-outline" size={20} color="#666" />
+                                <Ionicons name="time-outline" size={20} color={theme.colors.text.secondary} />
                                 <Text style={styles.timePickerText}>
                                     {selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </Text>
@@ -178,24 +196,42 @@ export default function CalendarScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: theme.colors.background.default,
+    },
+    header: {
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 15,
+        backgroundColor: theme.colors.background.paper,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.isDarkMode ? theme.colors.neutral.gray300 : theme.colors.neutral.gray200,
+    },
+    headerTitle: {
+        fontSize: 34,
+        fontWeight: 'bold',
+        color: theme.colors.text.primary,
+        marginBottom: 4,
+    },
+    headerSubtitle: {
+        fontSize: 16,
+        color: theme.colors.text.secondary,
     },
     content: {
         flex: 1,
     },
     listContainer: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.colors.background.default,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         padding: 20,
         marginTop: 10,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
         shadowRadius: 5,
         elevation: 5,
     },
@@ -208,7 +244,7 @@ const styles = StyleSheet.create({
     dateTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     addButton: {
         backgroundColor: '#007AFF',
@@ -219,27 +255,29 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     itemCard: {
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 10,
         padding: 15,
         marginBottom: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        borderWidth: 1,
+        borderColor: theme.isDarkMode ? theme.colors.neutral.gray300 : theme.colors.neutral.gray200,
     },
     itemTitle: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     itemTime: {
         fontSize: 14,
-        color: '#666',
+        color: theme.colors.text.secondary,
         marginTop: 2,
     },
     emptyText: {
         textAlign: 'center',
-        color: '#999',
+        color: theme.colors.text.disabled,
         marginTop: 20,
     },
     modalOverlay: {
@@ -250,7 +288,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '80%',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 20,
         padding: 20,
     },
@@ -259,18 +297,20 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
+        color: theme.colors.text.primary,
     },
     input: {
         borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        borderBottomColor: theme.isDarkMode ? theme.colors.neutral.gray400 : '#ddd',
         paddingVertical: 10,
         marginBottom: 15,
         fontSize: 16,
+        color: theme.colors.text.primary,
     },
     timePickerButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray200 : '#f0f0f0',
         padding: 15,
         borderRadius: 10,
         marginBottom: 20,
@@ -278,7 +318,7 @@ const styles = StyleSheet.create({
     timePickerText: {
         marginLeft: 10,
         fontSize: 16,
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     modalButtons: {
         flexDirection: 'row',
@@ -293,12 +333,13 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     cancelBtn: {
-        backgroundColor: '#eee',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray300 : '#eee',
     },
     saveBtn: {
         backgroundColor: '#007AFF',
     },
     btnText: {
         fontWeight: '600',
+        color: theme.colors.text.primary,
     },
 });
