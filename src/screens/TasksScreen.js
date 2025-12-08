@@ -13,8 +13,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import useTaskStore from '../store/useTaskStore';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function TasksScreen() {
+    const theme = useTheme();
+
     // Select state pieces individually to avoid re-renders on every store update
     const tasks = useTaskStore((state) => state.tasks);
     const filter = useTaskStore((state) => state.filter);
@@ -67,6 +70,8 @@ export default function TasksScreen() {
         }
     };
 
+    const styles = createStyles(theme);
+
     const renderFilterButton = (title, value) => (
         <TouchableOpacity
             style={[styles.filterButton, filter === value && styles.activeFilterButton]}
@@ -81,7 +86,8 @@ export default function TasksScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.headerContainer}>
-                <Text style={styles.header}>My Tasks</Text>
+                <Text style={styles.header}>Tasks</Text>
+                <Text style={styles.headerSubtitle}>Manage your to-do list</Text>
             </View>
 
             {/* Filter Tabs */}
@@ -102,7 +108,7 @@ export default function TasksScreen() {
                             <Ionicons
                                 name={item.completed ? "checkbox" : "square-outline"}
                                 size={24}
-                                color={item.completed ? "#4CAF50" : "#555"}
+                                color={item.completed ? "#4CAF50" : theme.colors.text.secondary}
                             />
                         </TouchableOpacity>
 
@@ -131,6 +137,7 @@ export default function TasksScreen() {
                 <TextInput
                     style={styles.input}
                     placeholder="Add a new task..."
+                    placeholderTextColor={theme.colors.text.disabled}
                     value={newTaskTitle}
                     onChangeText={setNewTaskTitle}
                     onSubmitEditing={handleAddTask}
@@ -155,6 +162,7 @@ export default function TasksScreen() {
                             value={editTitle}
                             onChangeText={setEditTitle}
                             autoFocus={true}
+                            placeholderTextColor={theme.colors.text.disabled}
                         />
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
@@ -177,33 +185,38 @@ export default function TasksScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.colors.background.default,
     },
     headerContainer: {
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: theme.colors.background.paper,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: theme.isDarkMode ? theme.colors.neutral.gray300 : theme.colors.neutral.gray200,
     },
     header: {
-        fontSize: 28,
+        fontSize: 34,
         fontWeight: 'bold',
-        color: '#333',
+        color: theme.colors.text.primary,
+        marginBottom: 4,
+    },
+    headerSubtitle: {
+        fontSize: 16,
+        color: theme.colors.text.secondary,
     },
     filterContainer: {
         flexDirection: 'row',
         padding: 10,
         justifyContent: 'space-around',
-        backgroundColor: '#fff',
+        backgroundColor: theme.colors.background.paper,
     },
     filterButton: {
         paddingVertical: 8,
         paddingHorizontal: 20,
         borderRadius: 20,
-        backgroundColor: '#f0f0f0',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray200 : '#f0f0f0',
     },
     activeFilterButton: {
         backgroundColor: '#007AFF',
@@ -211,7 +224,7 @@ const styles = StyleSheet.create({
     filterText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#666',
+        color: theme.colors.text.secondary,
     },
     activeFilterText: {
         color: '#fff',
@@ -221,7 +234,7 @@ const styles = StyleSheet.create({
         paddingBottom: 100, // Space for input area
     },
     taskItem: {
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 12,
         padding: 15,
         marginBottom: 10,
@@ -232,9 +245,11 @@ const styles = StyleSheet.create({
             width: 0,
             height: 2,
         },
-        shadowOpacity: 0.1,
+        shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
         shadowRadius: 3.84,
         elevation: 5,
+        borderWidth: 1,
+        borderColor: theme.isDarkMode ? theme.colors.neutral.gray300 : 'transparent',
     },
     checkButton: {
         marginRight: 10,
@@ -244,11 +259,11 @@ const styles = StyleSheet.create({
     },
     taskText: {
         fontSize: 16,
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     completedText: {
         textDecorationLine: 'line-through',
-        color: '#aaa',
+        color: theme.colors.text.disabled,
     },
     deleteButton: {
         padding: 5,
@@ -256,19 +271,19 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
         padding: 15,
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderTopWidth: 1,
-        borderTopColor: '#eee',
-        // Position at bottom 
+        borderTopColor: theme.isDarkMode ? theme.colors.neutral.gray300 : theme.colors.neutral.gray200,
     },
     input: {
         flex: 1,
-        backgroundColor: '#f0f0f0',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray200 : '#f0f0f0',
         borderRadius: 25,
         paddingHorizontal: 20,
         paddingVertical: 10,
         fontSize: 16,
         marginRight: 10,
+        color: theme.colors.text.primary,
     },
     addButton: {
         backgroundColor: '#007AFF',
@@ -286,7 +301,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '80%',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 20,
         padding: 20,
         alignItems: 'center',
@@ -295,14 +310,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 15,
+        color: theme.colors.text.primary,
     },
     modalInput: {
         width: '100%',
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        borderBottomColor: theme.isDarkMode ? theme.colors.neutral.gray400 : '#ccc',
         paddingVertical: 8,
         fontSize: 16,
         marginBottom: 20,
+        color: theme.colors.text.primary,
     },
     modalButtons: {
         flexDirection: 'row',
@@ -316,12 +333,13 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     cancelButton: {
-        backgroundColor: '#eee',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray300 : '#eee',
     },
     saveButton: {
         backgroundColor: '#007AFF',
     },
     buttonText: {
         fontWeight: 'bold',
+        color: theme.colors.text.primary,
     },
 });

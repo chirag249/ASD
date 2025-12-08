@@ -172,9 +172,16 @@ export const getRandomPuzzle = (difficulty = 'easy') => {
  * Fetch Sudoku puzzle from API
  */
 export const fetchSudokuFromAPI = async (difficulty = 'easy') => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+
     try {
         const difficultyMap = { easy: 'easy', medium: 'medium', hard: 'hard' };
-        const response = await fetch(`https://sugoku.onrender.com/board?difficulty=${difficultyMap[difficulty]}`);
+        const response = await fetch(
+            `https://sugoku.onrender.com/board?difficulty=${difficultyMap[difficulty]}`,
+            { signal: controller.signal }
+        );
+        clearTimeout(timeoutId);
         const data = await response.json();
 
         if (data.board) {
@@ -182,7 +189,8 @@ export const fetchSudokuFromAPI = async (difficulty = 'easy') => {
         }
         return getRandomPuzzle(difficulty);
     } catch (error) {
-        console.error('Error fetching Sudoku from API:', error);
+        // If aborted or failed, fall back safely
+        // console.error('Error fetching Sudoku from API (falling back to local):', error);
         return getRandomPuzzle(difficulty);
     }
 };

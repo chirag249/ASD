@@ -1,17 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useColorScheme } from 'react-native';
 
 import CalendarScreen from '../screens/CalendarScreen';
 import ExpensesScreen from '../screens/ExpensesScreen';
 import GamesScreen from '../screens/GamesScreen';
-import TasksScreen from '../screens/TasksScreen';
-
-
 import SettingsScreen from '../screens/SettingsScreen';
+import TasksScreen from '../screens/TasksScreen';
 
 const Tab = createBottomTabNavigator();
 
 export default function AppNavigator() {
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === 'dark';
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -33,7 +35,11 @@ export default function AppNavigator() {
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarActiveTintColor: '#007AFF',
-                tabBarInactiveTintColor: 'gray',
+                tabBarInactiveTintColor: isDark ? '#8E8E8E' : 'gray',
+                tabBarStyle: {
+                    backgroundColor: isDark ? '#1E1E1E' : '#FFFFFF',
+                    borderTopColor: isDark ? '#383838' : '#E0E0E0',
+                },
                 headerShown: false,
             })}
         >

@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useTheme } from '../../theme/ThemeContext';
 import {
     createInitialBoard,
     fetchSudokuFromAPI,
@@ -85,6 +86,7 @@ const gameReducer = (state, action) => {
 };
 
 export default function SudokuGame({ onBack }) {
+    const theme = useTheme();
     const [difficulty, setDifficulty] = useState('easy');
     const [loading, setLoading] = useState(false);
     const [state, dispatch] = useReducer(gameReducer, {
@@ -204,6 +206,8 @@ export default function SudokuGame({ onBack }) {
         );
     };
 
+    const styles = createStyles(theme);
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -287,10 +291,10 @@ export default function SudokuGame({ onBack }) {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.colors.background.default,
     },
     header: {
         backgroundColor: '#007AFF',
@@ -335,7 +339,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 20,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray300 : '#E0E0E0',
     },
     difficultyBtnActive: {
         backgroundColor: '#007AFF',
@@ -356,14 +360,14 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 15,
         fontSize: 16,
-        color: '#666',
+        color: theme.colors.text.secondary,
     },
     scrollContent: {
         alignItems: 'center',
         paddingBottom: 20,
     },
     gridContainer: {
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         padding: 10,
         borderRadius: 10,
         shadowColor: '#000',
@@ -424,7 +428,7 @@ const styles = StyleSheet.create({
     numberBtn: {
         width: (width - 80) / 5,
         height: (width - 80) / 5,
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
@@ -437,7 +441,7 @@ const styles = StyleSheet.create({
     numberText: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     actionButtons: {
         flexDirection: 'row',
@@ -447,7 +451,7 @@ const styles = StyleSheet.create({
     },
     actionBtn: {
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 10,
@@ -460,7 +464,7 @@ const styles = StyleSheet.create({
     actionBtnText: {
         marginTop: 5,
         fontSize: 12,
-        color: '#666',
+        color: theme.colors.text.secondary,
         fontWeight: '600',
     },
 });

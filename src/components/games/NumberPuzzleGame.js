@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useTheme } from '../../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const TILE_SIZE = (width - 100) / 4;
@@ -118,6 +119,7 @@ const checkGameOver = (grid) => {
 };
 
 export default function NumberPuzzleGame({ onBack }) {
+    const theme = useTheme();
     const [grid, setGrid] = useState(initializeGrid());
     const [score, setScore] = useState(0);
     const [bestScore, setBestScore] = useState(0);
@@ -225,6 +227,8 @@ export default function NumberPuzzleGame({ onBack }) {
     const getTileColor = (value) => COLORS[value] || '#3C3A32';
     const getTextColor = (value) => value <= 4 ? '#776E65' : '#F9F6F2';
 
+    const styles = createStyles(theme);
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -314,10 +318,10 @@ export default function NumberPuzzleGame({ onBack }) {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FAF8EF',
+        backgroundColor: theme.isDarkMode ? '#1E1E1E' : '#FAF8EF',
     },
     header: {
         backgroundColor: '#4ECDC4',

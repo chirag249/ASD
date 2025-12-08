@@ -20,9 +20,7 @@ export const Colors = {
 
     // Accent Colors (Entertainment - Vibrant)
     accent: {
-        purple: '#9C27B0',    // Nonogram
-        orange: '#FF5722',    // Minesweeper, alerts
-        cyan: '#00BCD4',      // Hitori
+
         teal: '#4ECDC4',      // 2048
         pink: '#E91E63',      // Memory game
         amber: '#FFC107',     // Warnings, hints
@@ -119,9 +117,7 @@ export const Colors = {
         sudoku: '#007AFF',
         memory: '#FF6B6B',
         puzzle2048: '#4ECDC4',
-        nonogram: '#9C27B0',
-        minesweeper: '#FF5722',
-        hitori: '#00BCD4',
+
     },
 };
 

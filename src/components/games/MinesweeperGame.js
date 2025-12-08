@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useTheme } from '../../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +20,7 @@ const DIFFICULTIES = {
 };
 
 export default function MinesweeperGame({ onBack }) {
+    const theme = useTheme();
     const [difficulty, setDifficulty] = useState('beginner');
     const [grid, setGrid] = useState([]);
     const [gameState, setGameState] = useState('playing'); // 'playing' | 'won' | 'lost'
@@ -309,6 +311,7 @@ export default function MinesweeperGame({ onBack }) {
     if (grid.length === 0) return null;
 
     const cellSize = getCellSize();
+    const styles = createStyles(theme);
 
     return (
         <View style={styles.container}>
@@ -394,10 +397,10 @@ export default function MinesweeperGame({ onBack }) {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.colors.background.default,
     },
     header: {
         backgroundColor: '#FF5722',
@@ -428,7 +431,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: '#E0E0E0',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray300 : '#E0E0E0',
     },
     difficultyBtnActive: {
         backgroundColor: '#FF5722',
@@ -436,7 +439,7 @@ const styles = StyleSheet.create({
     difficultyText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#666',
+        color: theme.colors.text.secondary,
     },
     difficultyTextActive: {
         color: 'white',
@@ -450,7 +453,7 @@ const styles = StyleSheet.create({
     statBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         paddingHorizontal: 15,
         paddingVertical: 8,
         borderRadius: 10,
@@ -464,14 +467,14 @@ const styles = StyleSheet.create({
     statValue: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     scrollContent: {
         alignItems: 'center',
         paddingBottom: 20,
     },
     gridContainer: {
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         padding: 5,
         borderRadius: 10,
         marginVertical: 15,
@@ -486,14 +489,14 @@ const styles = StyleSheet.create({
     },
     cell: {
         borderWidth: 1,
-        borderColor: '#BDBDBD',
-        backgroundColor: '#E0E0E0',
+        borderColor: theme.isDarkMode ? theme.colors.neutral.gray400 : '#BDBDBD',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray300 : '#E0E0E0',
         justifyContent: 'center',
         alignItems: 'center',
     },
     cellRevealed: {
-        backgroundColor: '#F5F5F5',
-        borderColor: '#999',
+        backgroundColor: theme.colors.background.paper,
+        borderColor: theme.colors.text.disabled,
     },
     cellMine: {
         backgroundColor: '#FF5252',
@@ -505,19 +508,19 @@ const styles = StyleSheet.create({
     instructions: {
         marginTop: 20,
         padding: 15,
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 10,
         marginHorizontal: 20,
     },
     instructionTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
+        color: theme.colors.text.primary,
         marginBottom: 10,
     },
     instructionText: {
         fontSize: 14,
-        color: '#666',
+        color: theme.colors.text.secondary,
         marginBottom: 5,
     },
 });

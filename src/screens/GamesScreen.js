@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+    BackHandler,
     Dimensions,
     ScrollView,
     StyleSheet,
@@ -8,12 +9,13 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import HitoriGame from '../components/games/HitoriGame';
 import MemoryGame from '../components/games/MemoryGame';
 import MinesweeperGame from '../components/games/MinesweeperGame';
-import NonogramGame from '../components/games/NonogramGame';
 import NumberPuzzleGame from '../components/games/NumberPuzzleGame';
 import SudokuGame from '../components/games/SudokuGame';
+import { useTheme } from '../theme/ThemeContext';
+
+
 
 const { width } = Dimensions.get('window');
 
@@ -40,30 +42,34 @@ const GAMES = [
         description: 'Combine numbers to reach 2048'
     },
     {
-        id: 'nonogram',
-        name: 'Nonogram',
-        icon: 'square-outline',
-        color: '#9C27B0',
-        description: 'Reveal pictures with number clues'
-    },
-    {
         id: 'minesweeper',
         name: 'Minesweeper',
         icon: 'flag',
         color: '#FF5722',
         description: 'Find mines using number hints'
-    },
-    {
-        id: 'hitori',
-        name: 'Hitori',
-        icon: 'contrast',
-        color: '#00BCD4',
-        description: 'Shade cells to eliminate duplicates'
     }
 ];
 
 export default function GamesScreen() {
+    const theme = useTheme();
     const [selectedGame, setSelectedGame] = useState(null);
+
+    useEffect(() => {
+        const backAction = () => {
+            if (selectedGame) {
+                setSelectedGame(null);
+                return true; // Prevent default behavior (exit app)
+            }
+            return false; // Default behavior
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction
+        );
+
+        return () => backHandler.remove();
+    }, [selectedGame]);
 
     if (selectedGame) {
         const renderGame = () => {
@@ -74,12 +80,8 @@ export default function GamesScreen() {
                     return <MemoryGame onBack={() => setSelectedGame(null)} />;
                 case 'number-puzzle':
                     return <NumberPuzzleGame onBack={() => setSelectedGame(null)} />;
-                case 'nonogram':
-                    return <NonogramGame onBack={() => setSelectedGame(null)} />;
                 case 'minesweeper':
                     return <MinesweeperGame onBack={() => setSelectedGame(null)} />;
-                case 'hitori':
-                    return <HitoriGame onBack={() => setSelectedGame(null)} />;
                 default:
                     return null;
             }
@@ -87,6 +89,8 @@ export default function GamesScreen() {
 
         return renderGame();
     }
+
+    const styles = createStyles(theme);
 
     return (
         <View style={styles.container}>
@@ -111,24 +115,20 @@ export default function GamesScreen() {
                             <Text style={styles.gameName}>{game.name}</Text>
                             <Text style={styles.gameDescription}>{game.description}</Text>
                         </View>
-                        <Ionicons name="chevron-forward" size={24} color="#999" />
+                        <Ionicons name="chevron-forward" size={24} color={theme.colors.text.disabled} />
                     </TouchableOpacity>
                 ))}
             </ScrollView>
 
-            {/* Footer Info */}
-            <View style={styles.footer}>
-                <Ionicons name="game-controller-outline" size={20} color="#999" />
-                <Text style={styles.footerText}>6 puzzle games to challenge your mind!</Text>
-            </View>
+
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.colors.background.default,
     },
     header: {
         backgroundColor: '#007AFF',
@@ -153,14 +153,14 @@ const styles = StyleSheet.create({
     gameCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 15,
         padding: 20,
         marginBottom: 15,
         borderLeftWidth: 5,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
         shadowRadius: 4,
         elevation: 3,
     },
@@ -178,22 +178,12 @@ const styles = StyleSheet.create({
     gameName: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#333',
+        color: theme.colors.text.primary,
         marginBottom: 5,
     },
     gameDescription: {
         fontSize: 14,
-        color: '#666',
+        color: theme.colors.text.secondary,
     },
-    footer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-        gap: 10,
-    },
-    footerText: {
-        fontSize: 14,
-        color: '#999',
-    },
+
 });

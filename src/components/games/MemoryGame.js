@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useTheme } from '../../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const CARD_SIZE = (width - 80) / 4;
@@ -26,6 +27,7 @@ const createDeck = (pairCount = 8) => {
 };
 
 export default function MemoryGame({ onBack }) {
+    const theme = useTheme();
     const [cards, setCards] = useState([]);
     const [flippedIndices, setFlippedIndices] = useState([]);
     const [moves, setMoves] = useState(0);
@@ -98,6 +100,8 @@ export default function MemoryGame({ onBack }) {
         }
     };
 
+    const styles = createStyles(theme);
+
     const renderCard = (card, index) => (
         <TouchableOpacity
             key={card.id}
@@ -115,7 +119,7 @@ export default function MemoryGame({ onBack }) {
                     color={card.matched ? '#4CAF50' : '#007AFF'}
                 />
             ) : (
-                <Ionicons name="help" size={40} color="#999" />
+                <Ionicons name="help" size={40} color={theme.colors.text.disabled} />
             )}
         </TouchableOpacity>
     );
@@ -153,10 +157,10 @@ export default function MemoryGame({ onBack }) {
     );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.colors.background.default,
     },
     header: {
         backgroundColor: '#FF6B6B',
@@ -183,20 +187,20 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     statBox: {
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         padding: 15,
         borderRadius: 15,
         alignItems: 'center',
         minWidth: 120,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
         shadowRadius: 4,
         elevation: 3,
     },
     statLabel: {
         fontSize: 14,
-        color: '#666',
+        color: theme.colors.text.secondary,
         marginBottom: 5,
     },
     statValue: {
@@ -214,13 +218,13 @@ const styles = StyleSheet.create({
     card: {
         width: CARD_SIZE,
         height: CARD_SIZE,
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: theme.isDarkMode ? 0.3 : 0.1,
         shadowRadius: 4,
         elevation: 3,
     },

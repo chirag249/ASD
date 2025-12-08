@@ -12,6 +12,7 @@ import {
     View
 } from 'react-native';
 import useExpenseStore from '../store/useExpenseStore';
+import { useTheme } from '../theme/ThemeContext';
 import {
     calculateTotal,
     EXPENSE_CATEGORIES,
@@ -22,6 +23,7 @@ import {
 } from '../utils/expenseUtils';
 
 export default function ExpensesScreen() {
+    const theme = useTheme();
     const expenses = useExpenseStore((state) => state.expenses);
     const fetchExpenses = useExpenseStore((state) => state.fetchExpenses);
     const addExpense = useExpenseStore((state) => state.addExpense);
@@ -134,6 +136,9 @@ export default function ExpensesScreen() {
             </View>
         </View>
     );
+
+
+    const styles = createStyles(theme);
 
     return (
         <View style={styles.container}>
@@ -397,10 +402,10 @@ const formatDate = (dateString) => {
     }
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
+        backgroundColor: theme.colors.background.default,
     },
     summaryContainer: {
         backgroundColor: '#007AFF',
@@ -509,7 +514,7 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     expenseCard: {
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 15,
         padding: 15,
         marginBottom: 10,
@@ -541,16 +546,16 @@ const styles = StyleSheet.create({
     expenseCategory: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     expenseDescription: {
         fontSize: 13,
-        color: '#666',
+        color: theme.colors.text.secondary,
         marginTop: 2,
     },
     expenseDate: {
         fontSize: 12,
-        color: '#999',
+        color: theme.colors.text.disabled,
         marginTop: 4,
     },
     expenseRight: {
@@ -573,7 +578,7 @@ const styles = StyleSheet.create({
     emptyText: {
         marginTop: 15,
         fontSize: 16,
-        color: '#999',
+        color: theme.colors.text.disabled,
     },
     fab: {
         position: 'absolute',
@@ -599,7 +604,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '85%',
-        backgroundColor: 'white',
+        backgroundColor: theme.colors.background.paper,
         borderRadius: 20,
         padding: 20,
         maxHeight: '80%',
@@ -609,11 +614,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     input: {
         borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        borderBottomColor: theme.isDarkMode ? theme.colors.neutral.gray400 : '#ddd',
         paddingVertical: 10,
         marginBottom: 15,
         fontSize: 16,
@@ -629,7 +634,7 @@ const styles = StyleSheet.create({
     pickerButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: theme.isDarkMode ? theme.colors.neutral.gray200 : '#f0f0f0',
         padding: 15,
         borderRadius: 10,
         marginBottom: 15,
@@ -638,7 +643,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         fontSize: 16,
-        color: '#333',
+        color: theme.colors.text.primary,
     },
     categoryList: {
         backgroundColor: '#f9f9f9',
